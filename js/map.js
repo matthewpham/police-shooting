@@ -1,32 +1,41 @@
-// Function to draw your map
-var drawMap() = function() {
+window.onload = function() {
+	drawMap();
+};
 
-  // Create map and set viewd
- 
-
-  // Create an tile layer variable using the appropriate url
-
-  // Add the layer to your map
- 
-
-  // Execute your function to get data
- 
+function drawMap() {
+  	var map = L.map('container').setView([47.6550, -122.3080], 8);
+  	var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png');
+  	layer.addTo(map);
+ 	getData(map);
 }
 
-// Function for getting data
-var getData = function() {
-
-  // Execute an AJAX request to get the data in data/response.js
-
-
-  // When your request is successful, call your customBuild function
-
+function getData(map) {
+  var data;
+  $.ajax({
+  	url: 'data/response.json',
+  	type: "get",
+  	success: function(dat) {
+  		data = dat;
+  		customBuild(data, map);
+  	},
+  	dataType: "json"
+  });
 }
 
 // Do something creative with the data here!  
-var customBuild = function() {
-
-  
+function customBuild(data, map) {
+	data.map(function(d) {
+		var gender = [];
+		var circle = new L.circleMarker([d.lat, d.lng],
+			{color: 'red', radius: 10}).addTo(map);
+		if (d["Victim's Gender"] == "Male") {
+			gender.push(circle);
+			circle.setStyle({color: 'blue'});
+		}
+		circle.bindPopup("<b>Victim's Gender: </b>" + d["Victim's Gender"] + "<br>"
+			+ "<b>Victim's Age: </b>" + d["Victim's Age"] + "<br>"
+			+ "<b>Summary: </b>" + d["Summary"]);
+	});
 }
 
 
